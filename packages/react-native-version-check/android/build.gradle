@@ -1,5 +1,13 @@
 
+def isNewArchitectureEnabled() {
+    return project.hasProperty("newArchEnabled") && project.newArchEnabled == "true"
+}
+
 apply plugin: 'com.android.library'
+
+if (isNewArchitectureEnabled()) {
+    apply plugin: 'com.facebook.react'
+}
 
 def DEFAULT_COMPILE_SDK_VERSION = 26
 def DEFAULT_BUILD_TOOLS_VERSION = "26.0.3"
@@ -13,10 +21,20 @@ android {
     defaultConfig {
         minSdkVersion rootProject.hasProperty('minSdkVersion') ? rootProject.minSdkVersion : DEFAULT_MIN_SDK_VERSION
         targetSdkVersion rootProject.hasProperty('targetSdkVersion') ? rootProject.targetSdkVersion : DEFAULT_TARGET_SDK_VERSION
+        buildConfigField "boolean", "IS_NEW_ARCHITECTURE_ENABLED", isNewArchitectureEnabled().toString()
         versionCode 1
         versionName "1.0"
         ndk {
             abiFilters "armeabi-v7a", "x86"
+        }
+    }
+    sourceSets {
+        main {
+            if (isNewArchitectureEnabled()) {
+                java.srcDirs += ['src/newarch']
+            } else {
+                java.srcDirs += ['src/oldarch']
+           }
         }
     }
     lintOptions {
@@ -27,4 +45,12 @@ android {
 dependencies {
     implementation 'com.facebook.react:react-native:+'
 }
-  
+
+
+if (isNewArchitectureEnabled()) {
+     react {
+         jsRootDir = file("../src/")
+         libraryName = "rnversioncheck"
+         codegenJavaPackageName = "io.xogus.reactnative.versioncheck"
+     }
+ }

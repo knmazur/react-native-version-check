@@ -15,6 +15,7 @@ import javax.annotation.Nullable;
 
 public class RNVersionCheckModule extends ReactContextBaseJavaModule
 {
+    public static String NAME = "RNVersionCheck";
     private final ReactApplicationContext reactContext;
     private final String packageName;
 
@@ -26,22 +27,19 @@ public class RNVersionCheckModule extends ReactContextBaseJavaModule
     }
 
     @Override
-    public @Nullable Map<String, Object> getConstants()
-    {
+    public @Nullable Map<String, Object> getConstants() {
         Map<String, Object> constants = new HashMap<>();
 
         constants.put("packageName", packageName);
         constants.put("country", getCountry());
 
         PackageManager packageManager = this.reactContext.getPackageManager();
-        try
-        {
+        try {
             PackageInfo info = packageManager.getPackageInfo(packageName, 0);
             constants.put("currentVersion", info.versionName);
             constants.put("currentBuildNumber", info.versionCode);
         }
-        catch (PackageManager.NameNotFoundException e)
-        {
+        catch (PackageManager.NameNotFoundException e) {
             constants.put("currentVersion", null);
             constants.put("currentBuildNumber", null);
         }
@@ -49,16 +47,14 @@ public class RNVersionCheckModule extends ReactContextBaseJavaModule
         return constants;
     }
 
-    private String getCountry()
-    {
+    private String getCountry() {
         Locale locale = getReactApplicationContext().getResources().getConfiguration().locale;
         return locale.getCountry();
     }
 
     @Override
-    public String getName()
-    {
-        return "RNVersionCheck";
+    public String getName() {
+        return NAME;
     }
 
 }
